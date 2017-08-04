@@ -25,7 +25,7 @@ class Api extends REST_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('api_model');
+		$this->load->model('Api_model');
 		$this->load->helper('jwt');
 	}
 	public function __destruct() {  
@@ -40,7 +40,7 @@ class Api extends REST_Controller {
 	{
 		$username = $this->post('username');
 		$password = $this->post('password');
-		$result = $this->api_model->login($username, $password);
+		$result = $this->Api_model->login($username, $password);
 		
 		if ($result['success']) {
 			// user logged in, generate a token and return
@@ -80,12 +80,17 @@ class Api extends REST_Controller {
 	
 				if ($token->reg_no) {		
 					switch($type) {
-						case 'userData'				: $result = $this->api_model->userData($token->reg_no); break;
-						case 'changePassword'		: $result = $this->api_model->changePassword($token->reg_no, $params); break;
-
-						case 'getStaffData'			: $result = $this->api_model->getStaffData($token->reg_no, $params); break;
-						
-						
+						case 'userData'				: $result = $this->Api_model->userData($token->reg_no); break;
+						case 'changePassword'		: $result = $this->Api_model->changePassword($token->reg_no, $params); break;
+						case 'addbooking'		    : $result = $this->Api_model->addbooking($params); break;
+						// venkat
+						case 'addtype'		        : $result = $this->Api_model->addtype($params); break;
+						case 'getroomtype'		  	: $result = $this->Api_model->getroomtype(); break;
+						case 'addregistration'		: $result = $this->Api_model->addregistration($params); break;
+						// case 'getStaff'				: $result = $this->api_model->getStaff($token->reg_no, $params); break;
+						// case 'Upload'				: $result = $this->Api_model->Upload($token->reg_no,$params); break;
+						case 'getlist'		: $result = $this->Api_model->getlist($params); break;
+						case 'insertlist'		: $result = $this->Api_model->insertlist($params); break;
 					}
 				
 					$success = true;
@@ -106,28 +111,68 @@ class Api extends REST_Controller {
 		$this->response($response);
 	}
 
-	// user data
-	public function userData_post()
-	{
-		$this->getData('userData', []);
+
+	// Add new Booking post
+	public function addbooking_post(){
+		$data['startdate']=$this->post('startdate');		
+		$data['enddate']=$this->post('enddate');
+		$data['description']=$this->post('description');
+	    $this->getData('addbooking',$data);	    	
+	    $this->response(true);
 	}
 
-	// // Change Password
-	public function changePassword_post()
-	{
-		$old_pass = $this->post('old_pass');
-		$new_pass = $this->post('new_pass');
-
-		$this->getData('changePassword', [$old_pass, $new_pass]);
+	// venkat
+	// Add room type post
+	public function addtype_post(){
+		// $data['typeid']=$this->post('typeid');		
+		$data['type']=$this->post('type');
+		$data['totalcount']=$this->post('totalcount');
+		$data['cost']=$this->post('cost');
+		$data['totaldues']=$this->post('totaldues');		
+	    $this->getData('addtype',$data);	    	
+	    $this->response(true);
 	}
 
-	// Getting staff data
-	public function getStaffData_post()
-	{
-		$utype = $this->post('utype');
-		$this->getData('getStaffData', [$utype]);
+
+	// roomtype get view
+	public function roomtype_get(){		    
+	    // $result=$this->Api_model->getroomtype();
+	    $data=[];
+	    $this->getData('getroomtype',$data);	
+	     // $this->response($result);	
+	}
+	public function getlist_get(){		    
+	    // $result=$this->Api_model->getroomtype();
+	    $data=[];
+	    $this->getData('getlist',$data);	
+	     // $this->response($result);	
 	}
 	
+
+	// Add registration post
+	public function addregistration_post(){	
+		$data['studentname']=$this->post('studentname');
+		$data['dateofbirth']=$this->post('dateofbirth');
+		$data['pwd']=$this->post('pwd');
+		$data['reg_no']=$this->post('reg_no');
+		$data['distance']=$this->post('distance');
+		$data['roomtype']=$this->post('roomtype');
+		$data['priority']=$this->post('priority');
+		$data['fathername']=$this->post('fathername');
+		$data['occupation']=$this->post('occupation');
+		$data['parentmobile']=$this->post('parentmobile');
+		$data['parentemail']=$this->post('parentemail');
+		$data['parentaddress']=$this->post('parentaddress');
+		$data['permanentaddress']=$this->post('permanentaddress');
+		$data['guardianname']=$this->post('guardianname');
+		$data['guardianrelation']=$this->post('guardianrelation');
+		$data['guardianmobile']=$this->post('guardianmobile');
+		$data['guardianemail']=$this->post('guardianemail');
+		$data['guardianaddress']=$this->post('guardianaddress');
+		$data['guardianpermanentaddress']=$this->post('guardianpermanentaddress');		
+	    $this->getData('addregistration',$data);	    	
+	    // $this->response(true);
+	}
 
 
 
@@ -157,8 +202,14 @@ class Api extends REST_Controller {
 
 	    return $ResultSet;
     }
-
-
-
-
+    public function insertlist_post(){
+		// $data['typeid']=$this->post('typeid');		
+		$data['name']=$this->post('name');
+		$data['quantity']=$this->post('quantity');
+		$data['price']=$this->post('price');
+		// $data['totaldues']=$this->post('totaldues');		
+	    $this->getData('insertlist',$data);	    	
+	    $this->response(true);
+	}
+	
 }

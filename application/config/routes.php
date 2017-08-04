@@ -49,7 +49,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
-$route['default_controller'] = 'api';
+$route['default_controller'] = 'Api';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
@@ -62,4 +62,14 @@ $route['api/validLogin']['post'] = 'api/validLogin';
 // Userdata 
 $route['api/userData']['post'] = 'api/userData';
 // change password 
-$route['api/changePassword']['post'] = 'api/changePassword';
+$route['Api/changePassword']['post'] = 'api/changePassword';
+$route['Api/usercolgadd']['post'] = 'Api/usercolgadd';
+$route['Api/usercolgview']['get'] = 'Api/usercolgview';
+$route['Api/userdepartmentsadd']['post'] = 'Api/userdepartmentsadd';
+$route['Api/userdepartmentsview']['get'] = 'Api/userdepartmentsview';
+$route['Api/getStaff']['post']='Api/getStaff';
+$route['Api/getupload']['post']='Api/upload';
+$route['Api/useryearadd']['post'] = 'Api/useryearadd';
+$route['Api/userbranchadd']['post']='Api/userbranchadd';
+$route['Api/deletebranch']['post']='Api/deletebranch';
+?>

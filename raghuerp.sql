@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 19, 2017 at 06:11 PM
+-- Generation Time: Jun 22, 2017 at 03:38 PM
 -- Server version: 10.1.21-MariaDB
 -- PHP Version: 5.6.30
 
@@ -62,7 +62,6 @@ DELIMITER ;
 --
 
 CREATE TABLE `colleges` (
-  `id` int(11) NOT NULL,
   `college` varchar(5) NOT NULL,
   `full_name` varchar(30) NOT NULL,
   `status` tinyint(4) NOT NULL
@@ -72,9 +71,9 @@ CREATE TABLE `colleges` (
 -- Dumping data for table `colleges`
 --
 
-INSERT INTO `colleges` (`id`, `college`, `full_name`, `status`) VALUES
-(1, 'REC', 'Raghu Engineering College', 1),
-(2, 'RIT', 'Raghu Institute of Technology', 1);
+INSERT INTO `colleges` (`college`, `full_name`, `status`) VALUES
+('REC', 'Raghu Engineering College', 1),
+('RIT', 'Raghu Institute of Technology', 1);
 
 -- --------------------------------------------------------
 
@@ -83,10 +82,9 @@ INSERT INTO `colleges` (`id`, `college`, `full_name`, `status`) VALUES
 --
 
 CREATE TABLE `departments` (
-  `id` int(11) NOT NULL,
-  `college` int(11) NOT NULL,
   `department` varchar(10) NOT NULL,
   `full_name` varchar(50) NOT NULL,
+  `college` varchar(10) NOT NULL,
   `status` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -94,11 +92,35 @@ CREATE TABLE `departments` (
 -- Dumping data for table `departments`
 --
 
-INSERT INTO `departments` (`id`, `college`, `department`, `full_name`, `status`) VALUES
-(1, 1, 'MECH', 'Mechanical Engineering', 1),
-(2, 1, 'CSE', 'Computer Science and Engineering', 1),
-(3, 2, 'EEE', 'Electrical and Electronics Engineering', 1),
-(4, 2, 'ECE', 'Electronics and Communication Engineering', 1);
+INSERT INTO `departments` (`department`, `full_name`, `college`, `status`) VALUES
+('CSE', 'Computer Science and Engineering', 'REC', 1),
+('ECE', 'Electronics and Communication Engineering', 'RIT', 1),
+('EEE', 'Electrical and Electronics Engineering', 'RIT', 1),
+('MECH', 'Mechanical Engineering', 'REC', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `designations`
+--
+
+CREATE TABLE `designations` (
+  `designation` varchar(30) NOT NULL,
+  `status` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `designations`
+--
+
+INSERT INTO `designations` (`designation`, `status`) VALUES
+('Assistant Professor', 1),
+('Associate Professor', 1),
+('Office Assistant', 1),
+('Principal', 1),
+('Professor', 1),
+('System Administrator', 1),
+('Technician', 1);
 
 -- --------------------------------------------------------
 
@@ -144,6 +166,7 @@ CREATE TABLE `password_resets` (
 CREATE TABLE `staff` (
   `id` smallint(6) UNSIGNED NOT NULL,
   `reg_no` varchar(12) NOT NULL,
+  `title` varchar(10) NOT NULL,
   `firstname` varchar(255) DEFAULT NULL,
   `lastname` varchar(255) DEFAULT NULL,
   `dispname` varchar(15) DEFAULT NULL,
@@ -156,6 +179,7 @@ CREATE TABLE `staff` (
   `dp` varchar(30) DEFAULT NULL,
   `present_address` text,
   `permanent_address` text,
+  `employment_type` varchar(20) NOT NULL,
   `pan` varchar(20) DEFAULT NULL,
   `aadhar` varchar(20) DEFAULT NULL,
   `passport` varchar(25) DEFAULT NULL,
@@ -177,8 +201,8 @@ CREATE TABLE `staff` (
 -- Dumping data for table `staff`
 --
 
-INSERT INTO `staff` (`id`, `reg_no`, `firstname`, `lastname`, `dispname`, `college`, `department`, `designation`, `qualification`, `email`, `mobile`, `dp`, `present_address`, `permanent_address`, `pan`, `aadhar`, `passport`, `dateob`, `placeob`, `stateob`, `countryob`, `gender`, `nationality`, `religion`, `caste`, `roll`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'RECCSE001', 'Cse Hod', 'Faculty', 'CseHod', 'REC', 'CSE', 'Professor', 'Ph.D.', 'cse_hod@raghuenggcollege.com', '9859852589', '', 'Raghu Engineering College', 'madhurawada', '', '', '', '1975-06-05', '', '', '', '', '', '', '', '', 0, '2017-06-14 02:00:00', '2017-06-19 06:05:58');
+INSERT INTO `staff` (`id`, `reg_no`, `title`, `firstname`, `lastname`, `dispname`, `college`, `department`, `designation`, `qualification`, `email`, `mobile`, `dp`, `present_address`, `permanent_address`, `employment_type`, `pan`, `aadhar`, `passport`, `dateob`, `placeob`, `stateob`, `countryob`, `gender`, `nationality`, `religion`, `caste`, `roll`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'RECCSE001', '', 'Cse Hod', 'Faculty', 'CseHod', 'REC', 'CSE', 'Professor', 'Ph.D.', 'cse_hod@raghuenggcollege.com', '9859852589', '', 'Raghu Engineering College', 'madhurawada', '', '', '', '', '1975-06-05', '', '', '', '', '', '', '', '', 0, '2017-06-14 02:00:00', '2017-06-19 06:05:58');
 
 --
 -- Triggers `staff`
@@ -292,13 +316,19 @@ ALTER TABLE `admins`
 -- Indexes for table `colleges`
 --
 ALTER TABLE `colleges`
-  ADD PRIMARY KEY (`id`);
+  ADD UNIQUE KEY `college` (`college`);
 
 --
 -- Indexes for table `departments`
 --
 ALTER TABLE `departments`
-  ADD PRIMARY KEY (`id`);
+  ADD UNIQUE KEY `department` (`department`);
+
+--
+-- Indexes for table `designations`
+--
+ALTER TABLE `designations`
+  ADD UNIQUE KEY `designation` (`designation`);
 
 --
 -- Indexes for table `migrations`
@@ -345,16 +375,6 @@ ALTER TABLE `users`
 --
 ALTER TABLE `admins`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
---
--- AUTO_INCREMENT for table `colleges`
---
-ALTER TABLE `colleges`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
---
--- AUTO_INCREMENT for table `departments`
---
-ALTER TABLE `departments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT for table `migrations`
 --
