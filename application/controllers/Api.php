@@ -91,7 +91,16 @@ class Api extends REST_Controller {
 						// case 'Upload'				: $result = $this->Api_model->Upload($token->reg_no,$params); break;
 						case 'getlist'		: $result = $this->Api_model->getlist($params); break;
 						case 'insertlist'		: $result = $this->Api_model->insertlist($params); break;
+						case 'itemoutlist'		: $result = $this->Api_model->itemoutlist($params); break;
+						case 'addnewitem'		: $result = $this->Api_model->addnewitem($params); break;
+						case 'menulist'		: $result = $this->Api_model->menulist($params); break;
+					case 'getmenulist' : $result = $this->Api_model->getmenulist($params); break;
+					case 'updatelist' : $result = $this->Api_model->updatelist($params); break;
+
+					case 'stockRegister'		: $result = $this->Api_model->stockRegister($params); break;
+						case 'stockBalance'			: $result = $this->Api_model->stockBalance($params); break;
 					}
+
 				
 					$success = true;
 				}
@@ -140,14 +149,7 @@ class Api extends REST_Controller {
 	    $data=[];
 	    $this->getData('getroomtype',$data);	
 	     // $this->response($result);	
-	}
-	public function getlist_get(){		    
-	    // $result=$this->Api_model->getroomtype();
-	    $data=[];
-	    $this->getData('getlist',$data);	
-	     // $this->response($result);	
-	}
-	
+	}	
 
 	// Add registration post
 	public function addregistration_post(){	
@@ -202,14 +204,89 @@ class Api extends REST_Controller {
 
 	    return $ResultSet;
     }
+
+
+
+
+
+
+    //Mess Incharge
     public function insertlist_post(){
-		// $data['typeid']=$this->post('typeid');		
-		$data['name']=$this->post('name');
-		$data['quantity']=$this->post('quantity');
-		$data['price']=$this->post('price');
-		// $data['totaldues']=$this->post('totaldues');		
+    	$data=array(
+    		'type' => $this->post('type'),
+    		'insert_date' => $this->post('insert_date'),
+    		'active_list' => $this->post('activeList'),
+    		'reg_no' => $this->post('reg_no')
+           );	
 	    $this->getData('insertlist',$data);	    	
 	    $this->response(true);
 	}
+	public function itemoutlist_post()
+	{
+		$time=  $this->post('out_date1');
+		$start = date('h:i:s');
+       echo $time.' '.$start;
+		$data=array(
+			'slot' => $this->post('slot'),
+            'type' => $this->post('type'),
+			'active_list1' => $this->post('activeList1'),
+			'out_date' => $time.' '.$start,
+			'reg_no' => $this->post('reg_no')
+			);
+		  $this->getData('itemoutlist',$data);	    	
+	    $this->response(true);
+	}
+	public function getlist_get(){		    
+	    
+	    $data=[];
+	    $this->getData('getlist');	
+	    	
+	}
+	public function addnewitem_post()
+	{
+		$data=array(
+			'item' => $this->post('item')
+			);
+		// $data['item']=$this->post('item');
+		$this->getData('addnewitem',$data);
+	}
+	public function menulist_post()
+	{
+		$data=array(
+			'mday' => $this->post('day'),
+            'breakfast' => $this->post('breakfast'),
+			'lunch' => $this->post('lunch'),
+			'snacks' => $this->post('snacks'),
+			'dinner' => $this->post('dinner')
+			);
+		  $this->getData('menulist',$data);	    	
+	    $this->response(true);
+	}
+	public function getmenulist_get(){		    
+	    
+	    $data=[];
+	    $this->getData('getmenulist');	
+	    	
+	}
+	public function updatelist_post()
+	{
+		$data=array(
+			'id' => $this->post('id'),
+            'breakfast' => $this->post('breakfast'),
+			'lunch' => $this->post('lunch'),
+			'snacks' => $this->post('snacks'),
+			'dinner' => $this->post('dinner')
+			);
+		  $this->getData('updatelist',$data);	    	
+	    $this->response(true);
+	}
+	public function stockRegister_get(){
+		$this->getData('stockRegister');
+	}
+
+	public function stockBalance_get(){
+		$this->getData('stockBalance');
+	}
+
 	
 }

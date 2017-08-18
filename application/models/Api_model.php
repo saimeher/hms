@@ -125,13 +125,7 @@ class Api_model extends CI_Model
         $data=$this->db->query($sql);
         return $data->result();
     }
-    //get list for mess
-     public function getlist(){
-        // $sql="select * from stocks";
-        $sql ="SHOW COLUMNS FROM `stocks`";
-        $data=$this->db->query($sql);
-        return $data->result();         
-    }
+   
 
     // add registration
      public function addregistration($data){ 
@@ -179,10 +173,228 @@ class Api_model extends CI_Model
         return $ResultSet;
     }
 
- public function insertlist($data){
-       $this->db->insert('product',$data);
+ // public function insertlist($data){
+ //       $this->db->insert('product',$data);
              
+ //    }
+
+
+
+
+
+    ////Mess
+ //     public function insertlist($data)
+ //    {  
+       
+ //        $val1 = $data['insert_date'];
+ //       $insert_date = $val1['jsdate'];
+        
+
+ //        $active_list = $data['active_list'];
+ //        $reg_no = $data['reg_no'];
+ //        $type =$data['type']; 
+
+       
+ //        $sql = "insert into stock_register(reg_no,item,quantity,price,edate,trans_type) values";
+ //        for($i=0; $i<sizeof($active_list); $i++) {
+ //            $val = $active_list[$i];
+        
+ //                $sql .= "('$reg_no','" . $val['name'] . "','" . $val['quantity'] . "','".$val['price']."','$insert_date','$type'),"; 
+          
+ //            }
+ //            $sql = substr($sql, 0, strlen($sql)-1);
+ //           if($this->db->query($sql)){
+ //            return array("success" => true);
+
+ //            }
+ //         else
+ //        {
+ //            return array("success" => false);
+ //        }
+
+ //     }
+ // public function itemoutlist($data)
+ //    {  
+ //         $val1 = $data['out_date'];
+
+ //          $out_date = $val1['jsdate'];
+ //        // $out_date = $data['out_date'];
+
+ //        $active_list1 = $data['active_list1'];
+ //        $type =$data['type'];
+ //        $slot =$data['slot']; 
+ //        $reg_no = $data['reg_no'];
+
+ //        $sql = "insert into stock_register(reg_no,item, quantity,edate,slot_type,trans_type) values";
+ //        for($j=0; $j<sizeof($active_list1); $j++) {
+ //            $val1 = $active_list1[$j];
+
+
+ //          $sql .= "('$reg_no','" . $val1['name'] . "','" . $val1['quantity'] . "','$out_date','$slot','$type'),"; 
+                  
+ //        }
+
+ //     $sql = substr($sql, 0, strlen($sql)-1);
+
+ //       if($this->db->query($sql)){
+ //      return array("success" => true);
+
+ //    }else{
+ //      return array("success" => false);
+ // }
+    public function insertlist($data)
+    {  
+        $latest_inn=0;
+        $val1 = $data['insert_date'];
+       $insert_date = $val1['jsdate'];
+       
+        
+
+        $active_list = $data['active_list'];
+        $type =$data['type']; 
+        $reg_no = $data['reg_no'];
+
+       
+      
+        for($i=0; $i<sizeof($active_list); $i++) {
+           $sql = "insert into stock_register(reg_no,item, quantity,units,price,receipt_no,edate,trans_type,balance) values";
+           $val = $active_list[$i];
+           $quantity=  $this->db->query('SELECT * FROM `material` where mid="'.$val['name'].'" ORDER BY mid DESC limit 1')->row();
+          
+         
+           if($quantity->latest_in==0){
+           // echo 'if condition';
+            $last_in_updated = date('Y-m-d h:i:s');
+            $sql .= "('$reg_no','" . $val['name'] . "','" . $val['quantity'] . "','" . $val['units'] . "','".$val['price']."','".$val['receipt_no']."','$insert_date','$type','" . $val['quantity'] . "'),"; 
+            $inupdate=  $this->db->query('update `material` set latest_in="'.$val['quantity'].'" , total_balance = "'.$val["quantity"].'", last_in_updated =  "'.$last_in_updated.'" where mid="'.$val['name'].'" ');
+    
+           }else{
+          
+            $bal1 = $quantity->total_balance;
+            $bal = $quantity->total_balance + $val['quantity'];
+
+            $latest_inn += $val['quantity'];
+            $last_in_updated = date('Y-m-d h:i:s');
+             $sql .= "('$reg_no','" . $val['name'] . "','" . $val['quantity'] . "','" . $val['units'] . "','".$val['price']."','".$val['receipt_no']."','$insert_date','$type',($bal1 + ".$val["quantity"].")),";
+            $inupdate=  $this->db->query('update `material` set latest_in="'.$latest_inn.'" ,total_balance =  "'.$bal.'", last_in_updated =  "'.$last_in_updated.'"    where mid="'.$val['name'].'" ');
+            }     
+              $sql = substr($sql, 0, strlen($sql)-1);    
+              $result = $this->db->query($sql);
+           }
+           
+           if($result){
+            return array("success" => true);
+
+            }
+         else
+        {
+            return array("success" => false);
+        }
+
+     }
+ public function itemoutlist($data)
+    {  
+        $latest_out=0;
+        // $val1 = $data['out_date'];
+
+        // $out_date = $val1['jsdate'];
+        //  $out_date = strtotime('$data['out_date']');
+        // $start = date('Y-m-d H:i:s', $out_date);
+
+
+        // $out_date = date('Y-m-d H:i:s', $out_date1);
+         $out_date1 = $data['out_date'];
+
+        $active_list1 = $data['active_list1'];
+        $type =$data['type'];
+        $slot =$data['slot']; 
+        $reg_no = $data['reg_no'];
+       
+        for($j=0; $j<sizeof($active_list1); $j++) {
+            $val1 = $active_list1[$j];
+
+            $sql = "insert into stock_register(reg_no,item, quantity,units,edate,slot_type,trans_type,balance) values";
+            $quantity= $this->db->query('SELECT * FROM `material` where mid="'.$val1['name'].'" ORDER BY mid DESC limit 1')->row();
+           
+            if($quantity){
+         
+            $bal1 = $quantity->total_balance;
+            if($bal1 >= $val1['quantity'])
+            {
+            $bal = $quantity->total_balance - $val1['quantity'];
+            $latest_out += $val1['quantity'];
+            $last_out_updated = date('Y-m-d h:i:s');
+            $sql .= "('$reg_no','" . $val1['name'] . "','" . $val1['quantity'] . "','" . $val1['units'] . "','$out_date1','$slot','$type',($bal1 - ".$val1["quantity"].")),";
+            $inupdate=  $this->db->query('update `material` set latest_out="'.$latest_out.'" ,total_balance =  "'.$bal.'", last_out_updated= "'.$last_out_updated.'"  where mid="'.$val1['name'].'" ');
+
+            $sql = substr($sql, 0, strlen($sql)-1);
+            $result = $this->db->query($sql);    
+            if($result){
+          return array("success" => true);
+          } 
+          else
+          {
+         return array("success" => false);
+           }
+        }
+
+           else{
+            // echo 'sai';
+             return array("success" => false);
+           } 
+        }
+       
+}
+
+}
+ //get list for mess
+     public function getlist(){
+        
+        $sql ="select * from material";
+        $data=$this->db->query($sql);
+        return $data->result();         
     }
 
+    public function addnewitem($data)
+    {
+       $this->db->insert('material',$data);
+    }
+      public function menulist($data)
+    {
+       $this->db->insert('menu_list',$data);
+    }
+
+    public function getmenulist(){
+        
+        $sql ="select * from menu_list";
+        $data=$this->db->query($sql);
+        return $data->result();         
+    }
+    public function updatelist($params)
+    {
+    $this->db->query('update menu_list set breakfast= "'.$params['breakfast'].'", lunch =  "'.$params['lunch'].'", snacks =  "'.$params['snacks'].'", dinner =  "'.$params['dinner'].'"  where id =  "'.$params['id'].'"');
+     }
+
+
+
+     public function stockRegister(){
+      //  $result = $this->db->query('SELECT *, m.item,max(balance) as tot_balance , sum(price) as total_PRICE FROM stock_register s INNER join material m on m.mid=s.item GROUP by s.item order by balance')->result();
+         $result = $this->db->query('SELECT s.*, m.item as item_name FROM stock_register s INNER join material m on m.mid=s.item   order by srid DESC ')->result();
+        if($result){
+            return array("success"=>true, "data"=>$result);
+        }else{
+            return array("success"=>false);
+        }
+    }
+
+     public function stockBalance(){
+      //  $result = $this->db->query('SELECT *, m.item,max(balance) as tot_balance , sum(price) as total_PRICE FROM stock_register s INNER join material m on m.mid=s.item GROUP by s.item order by balance')->result();
+         $result = $this->db->query('SELECT * FROM  material order by item ASC ')->result();
+        if($result){
+            return array("success"=>true, "data"=>$result);
+        }else{
+            return array("success"=>false);
+        }
+    }
 }
 ?>
