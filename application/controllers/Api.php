@@ -98,8 +98,13 @@ class Api extends REST_Controller {
 					case 'updatelist' : $result = $this->Api_model->updatelist($params); break;
 
 					case 'stockRegister'		: $result = $this->Api_model->stockRegister($params); break;
-						case 'stockBalance'			: $result = $this->Api_model->stockBalance($params); break;
+				    case 'stockBalance'			: $result = $this->Api_model->stockBalance($params); break;
+				    case 'getunits'			: $result = $this->Api_model->getunits($params); break;
+
+				    case 'updatematerialslist'			: $result = $this->Api_model->updatematerialslist($params); break;	
+				    case 'deleteitem' : $result = $this->Api_model->deleteitem($params); break;
 					}
+
 
 				
 					$success = true;
@@ -205,19 +210,17 @@ class Api extends REST_Controller {
 	    return $ResultSet;
     }
 
-
-
-
-
-
     //Mess Incharge
     public function insertlist_post(){
+    	$time1=  $this->post('insert_date1');
+		$start1 = date('h:i:s');
     	$data=array(
     		'type' => $this->post('type'),
-    		'insert_date' => $this->post('insert_date'),
+    		'insert_date' =>  $time1.' '.$start1,
     		'active_list' => $this->post('activeList'),
     		'reg_no' => $this->post('reg_no')
-           );	
+           );
+
 	    $this->getData('insertlist',$data);	    	
 	    $this->response(true);
 	}
@@ -225,7 +228,6 @@ class Api extends REST_Controller {
 	{
 		$time=  $this->post('out_date1');
 		$start = date('h:i:s');
-       echo $time.' '.$start;
 		$data=array(
 			'slot' => $this->post('slot'),
             'type' => $this->post('type'),
@@ -233,6 +235,7 @@ class Api extends REST_Controller {
 			'out_date' => $time.' '.$start,
 			'reg_no' => $this->post('reg_no')
 			);
+		 // print_r(  $data['active_list1']);
 		  $this->getData('itemoutlist',$data);	    	
 	    $this->response(true);
 	}
@@ -245,7 +248,9 @@ class Api extends REST_Controller {
 	public function addnewitem_post()
 	{
 		$data=array(
-			'item' => $this->post('item')
+			'item' => $this->post('item1'),
+			'units' => $this->post('units1'),
+			'minvalue' => $this->post('minvalue'),
 			);
 		// $data['item']=$this->post('item');
 		$this->getData('addnewitem',$data);
@@ -287,6 +292,41 @@ class Api extends REST_Controller {
 	public function stockBalance_get(){
 		$this->getData('stockBalance');
 	}
-
+	public function getunits_post()
+	{
+		$data=array(
+			'mid' => $this->post('name')
+			);
+		// $data['item']=$this->post('item');
+		$this->getData('getunits',$data);
+	}
+	public function updatematerialslist_post()
+	{
+		$data=array(
+			'mid' => $this->post('mid'),
+			'minvalue' => $this->post('minvalue'),
+			'item' => $this->post('item1'),
+			'units' => $this->post('units1')
+			);
+		// $data['item']=$this->post('item');
+		$this->getData('updatematerialslist',$data);
+	}
+	public function purchaserlist_post()
+	{
+		$data=array(
+			'mid' => $this->post('mid'),
+			'list' => $this->post('list')
+			);
+		// $data['item']=$this->post('item');
+		$this->getData('purchaserlist',$data);
+	}
+	public function deleteitem_post()
+	{
+		$data=array(
+			'mid' => $this->post('mid')
+			);
+		// $data['item']=$this->post('item');
+		$this->getData('deleteitem',$data);
+	}
 	
 }
